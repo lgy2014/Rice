@@ -1,0 +1,27 @@
+﻿<Page x:Class="Rice.Pages.SqlToStringBuilder"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      d:DesignHeight="300" d:DesignWidth="600"
+	Title="SqlToStringBuilder">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <TextBlock Text="SQL代码:" />
+        <TextBox x:Name="txtSql" Text="{Binding TextSource}" TextWrapping="Wrap" AcceptsReturn="True"  VerticalScrollBarVisibility="Auto" Grid.Row="1" />
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <Button x:Name="btnRun" Content="拼接为C#代码" Command="{Binding Run}" />
+            <Button x:Name="btnCopy" Margin="10 0 0 0" Content="复制C#代码" Command="{Binding Copy}" />
+            <Button x:Name="btnClear" Margin="10 0 0 0" Content="清除" Command="{Binding Clear}" />
+            <TextBlock x:Name="tbShow" Visibility="Visible" Text="{Binding labMsg}" Margin="10 0 0 0" />
+        </StackPanel>
+        <TextBox x:Name="txtCSharp" Text="{Binding TextTarget}" TextWrapping="Wrap" AcceptsReturn="True" IsReadOnly="True" VerticalScrollBarVisibility="Auto" Grid.Row="3" />
+    </Grid>
+</Page>
