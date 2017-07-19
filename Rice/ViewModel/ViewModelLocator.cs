@@ -43,6 +43,7 @@ namespace Rice.ViewModel
 
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<SqlToStringBuilderViewModel>();
+            SimpleIoc.Default.Register<BatchRenameModel>();
         }
 
         public MainViewModel Main
@@ -58,6 +59,14 @@ namespace Rice.ViewModel
             get
             {
                 return ServiceLocator.Current.GetInstance<SqlToStringBuilderViewModel>();
+            }
+        }
+
+        public BatchRenameModel BatchRenameModel
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<BatchRenameModel>();
             }
         }
 

@@ -9,7 +9,7 @@ using System.Windows.Input;
 
 namespace Rice.ViewModel
 {
-    public class SqlToStringBuilderViewModel : ViewModelBase, ISingletonDependency
+    public class SqlToStringBuilderViewModel : ViewModelBase
     {
         private string _textSource;
         public const string TextSourcePropertyName = "TextSource";

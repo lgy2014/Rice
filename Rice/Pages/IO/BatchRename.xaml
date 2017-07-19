@@ -4,6 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+             xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="600">
     <UserControl.Resources>
@@ -25,9 +27,16 @@
                 <StackPanel>
                     <TextBlock Text="替换文件名中的字符" />
                     <TextBlock Text="把" />
-                    <TextBox x:Name="txtFrom" />
+                    <TextBox x:Name="txtFrom" Text="{Binding TextFrom}">
+                    </TextBox>
                     <TextBlock Text="替换为" />
-                    <TextBox x:Name="txtTo" />
+                    <TextBox x:Name="txtTo" Text="{Binding TextTo}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <cmd:EventToCommand Command="{Binding ChangeFilesCommand}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </TextBox>
                 </StackPanel>
             </TabItem>
             <TabItem Header="整体">
@@ -55,25 +64,17 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <TextBlock Text="文件目录" />
-                <TextBox x:Name="txtDir" Grid.Column="1" />
-                <Button x:Name="btnBrowser" Grid.Column="2" Content="浏览" />
+                <TextBox x:Name="txtDir" Grid.Column="1" Text="{Binding TextDir}" />
+                <Button x:Name="btnBrowser" Grid.Column="2" Content="浏览" Command="{Binding GetDir}" />
                 <TextBlock Text="文件类型" Grid.Row="1" />
-                <ComboBox x:Name="cmbFileTypes" IsEditable="True" Grid.Column="1" Grid.Row="1">
-                    <ComboBoxItem Selector.IsSelected="True" Content="*.txt" />
-                    <ComboBoxItem Content="*.sln;*.csproj;*.config;*.aspx;*.cs; *.txt;*.cshtml;*.html;*.asax;*.ashx;*.js;*.css;" />
-                    <ComboBoxItem Content="*.ini;*.reg;*.bat;*.cmd;" />
-                    <ComboBoxItem Content="*.htm;*.html;*.xml;" />
-                    <ComboBoxItem Content="*.asp;*.aspx;*.php; *.php3;*.php4;*.php5;*.jsp;*.asax;*.ashx;*.js;*.css;" />
-                    <ComboBoxItem Content="*.java;*.c;*.h;*.cpp;*.cc;*.inl;*.inc;*.vb;*.vbs;*.vs;" />
+                <ComboBox x:Name="cmbFileTypes" IsEditable="True" ItemsSource="{Binding FileTypes}" SelectedItem="{Binding FileTypesEntry}" DisplayMemberPath="Entry" Grid.Column="1" Grid.Row="1">
                 </ComboBox>
-                <CheckBox x:Name="chkSubDir" Content="搜索子目录" Margin="15 0 0 0" Grid.Row="1" Grid.Column="2"/>
-                <TextBlock Text="排除子目录" Grid.Row="2" />
-                <ComboBox x:Name="cmbExcludeSubDir" IsEditable="True" Grid.Column="1" Grid.Row="2">
-                    <ComboBoxItem Selector.IsSelected="True" Content="bin;obj;.vs;.git;packages;" />
-                </ComboBox>
-                <Button x:Name="btnSearch" Grid.Column="2" Grid.Row="3" Content="搜索" />
+                <CheckBox x:Name="chkSubDir" IsChecked="{Binding IsChecked}" Content="搜索子目录" Margin="15 0 0 0" Grid.Row="1" Grid.Column="2"/>
+                <TextBlock Text="排除目录" Grid.Row="2" />
+                <ComboBox x:Name="cmbExcludeSubDir" IsEditable="True" Grid.Column="1" Grid.Row="2" ItemsSource="{Binding ExcludeSubDirs}" SelectedItem="{Binding DirEntry}" DisplayMemberPath="Entry" />
+                <Button x:Name="btnSearch" Grid.Column="2" Grid.Row="3" Content="搜索" Command="{Binding SearchFile}" />
             </Grid>
-            <DataGrid Name="DG1" ItemsSource="{Binding}" AutoGenerateColumns="False" Grid.Row="2">
+            <DataGrid Name="DG1" ItemsSource="{Binding DGFiles}" AutoGenerateColumns="False" Grid.Row="2">
                 <DataGrid.Columns>
                     <mui:DataGridTextColumn Header="源文件名"  Binding="{Binding FirstName}"/>
                     <mui:DataGridTextColumn Header="预览" Binding="{Binding PreviewName}" />
