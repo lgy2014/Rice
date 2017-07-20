@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System;
 using System.IO;
+using System.ComponentModel;
 
 namespace Rice.ViewModel
 {
@@ -30,12 +31,15 @@ namespace Rice.ViewModel
             ComboxEntry direntry = new ComboxEntry() { Entry = "bin;obj;.vs;.git;packages;" };
             _ExcludeSubDirs.Add(direntry);
             _DirEntry = direntry;
+
+            TextChangedCommand = new RelayCommand<string>(ChangeFilesCommand);
+            Run = new RelayCommand(RunCommand);
         }
 
         #region 属性
 
         private string _textFrom;
-        public const string TexFromPropertyName = "TextFrom";
+        public const string TextFromPropertyName = "TextFrom";
         public string TextFrom
         {
             get
@@ -45,7 +49,7 @@ namespace Rice.ViewModel
             set
             {
                 _textFrom = value;
-                RaisePropertyChanged(TexFromPropertyName);
+                RaisePropertyChanged(TextFromPropertyName);
             }
         }
 
@@ -63,6 +67,9 @@ namespace Rice.ViewModel
                 RaisePropertyChanged(TextToPropertyName);
             }
         }
+
+        public ICommand TextChangedCommand { get; private set; }
+
 
         private string _textDir;
         public const string TextDirPropertyName = "TextDir";
@@ -196,18 +203,19 @@ namespace Rice.ViewModel
                 return;
             }
 
-            if (_FileTypesEntry==null)
+            if (_FileTypesEntry == null)
             {
                 return;
             }
 
-            if (_DirEntry==null)
+            if (_DirEntry == null)
             {
                 return;
             }
 
             try
             {
+                DGFiles.Clear();
                 GetFiles(TextDir);
             }
             catch (System.Exception ex)
@@ -229,7 +237,7 @@ namespace Rice.ViewModel
                 FileInfo[] files = di.GetFiles(str);
                 foreach (FileInfo f in files)
                 {
-                    _DGFiles.Add(new FileItem() { FileInfomation=f,FirstName=f.Name,PreviewName=f.Name});
+                    _DGFiles.Add(new FileItem() { FileInfomation = f, FirstName = f.Name, PreviewName = f.Name });
                 }
             }
 
@@ -240,39 +248,96 @@ namespace Rice.ViewModel
             {
                 GetFiles(dir);
             }
-            
+
         }
 
-        private void ChangeFilesCommand()
+        private void ChangeFilesCommand(string targetText)
         {
+            TextTo = targetText ?? string.Empty;
             if (DGFiles == null || DGFiles.Count == 0)
             {
                 return;
             }
-            //
+
             if (string.IsNullOrEmpty(TextFrom))
             {
                 return;
             }
+
             foreach (FileItem item in DGFiles)
             {
-                item.PreviewName = item.FileInfomation.Name.Split('.')[0].Replace(TextFrom, TextTo) + item.FileInfomation.Extension;
+                item.PreviewName = item.FileInfomation.Name.Split('.')[0].Replace(TextFrom, targetText) + item.FileInfomation.Extension;
             }
-
+            DGFiles = DGFiles;
         }
 
+        public ICommand Run { get; private set; }
+
+        private void RunCommand()
+        {
+            if (string.IsNullOrEmpty(TextFrom))
+            {
+                return;
+            }
+
+            if (TextTo == TextFrom)
+            {
+                return;
+            }
+
+            foreach (FileItem f in DGFiles)
+            {
+                if (f.FirstName == f.PreviewName)
+                {
+                    continue;
+                }
+                f.FileInfomation.MoveTo(f.FileInfomation.FullName.Replace(f.FirstName, f.PreviewName));
+                f.Result = "完成";
+            }
+        }
         #endregion
     }
 
-    public class FileItem
+    public class FileItem : INotifyPropertyChanged
     {
         public string FirstName { get; set; }
-        public string PreviewName { get; set; }
-        public string Result { get; set; }
+
+        private string _PreviewName;
+        public string PreviewName
+        {
+            get { return _PreviewName; }
+            set
+            {
+                _PreviewName = value;
+                OnPropertyChanged("PreviewName");
+            }
+        }
+
+        private void OnPropertyChanged(string propertyName)
+        {
+            PropertyChangedEventHandler handler = this.PropertyChanged;
+            if (null != handler)
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private string _Result;
+        public string Result
+        {
+            get { return _Result; }
+            set
+            {
+                _Result = value;
+                OnPropertyChanged("Result");
+            }
+        }
         public string FullName { get; set; }
         public string Path { get; set; }
 
         public FileInfo FileInfomation { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     public class ComboxEntry

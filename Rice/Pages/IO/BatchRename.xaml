@@ -28,12 +28,17 @@
                     <TextBlock Text="替换文件名中的字符" />
                     <TextBlock Text="把" />
                     <TextBox x:Name="txtFrom" Text="{Binding TextFrom}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="TextChanged">
+                                <cmd:EventToCommand Command="{Binding TextChangedCommand}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                     </TextBox>
                     <TextBlock Text="替换为" />
                     <TextBox x:Name="txtTo" Text="{Binding TextTo}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TextChanged">
-                                <cmd:EventToCommand Command="{Binding ChangeFilesCommand}" />
+                                <cmd:EventToCommand CommandParameter="{Binding ElementName=txtTo,Path=Text}" Command="{Binding TextChangedCommand}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TextBox>
@@ -82,7 +87,7 @@
                 </DataGrid.Columns>
             </DataGrid>
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button x:Name="btnRun" Content="开始重命名(R)" />
+                <Button x:Name="btnRun" Content="开始重命名(R)" Command="{Binding Run}" />
                 <Button x:Name="btnCancle" Content="取消(C)" />
             </StackPanel>
         </Grid>
