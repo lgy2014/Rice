@@ -72,7 +72,7 @@ namespace Rice.ViewModel
             {
                 sqlBuilder.AppendLine("sqlBuilder.AppendLine(\"" + item + "\");");
             }
-            sqlBuilder.AppendLine("string ret = sqlBuilder.ToString();");
+            sqlBuilder.AppendLine("string sqlText = sqlBuilder.ToString();");
             string ret = sqlBuilder.ToString();
             TextTarget = ret;
         }
