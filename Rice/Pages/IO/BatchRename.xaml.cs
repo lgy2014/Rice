@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using Rice.ViewModel;
 using System.Windows.Controls;
+using System;
+using System.Windows;
 
 namespace Rice.Pages.IO
 {
@@ -23,7 +25,13 @@ namespace Rice.Pages.IO
 
             Messenger.Default.Register<string>(this, "OpenDialog", OpenDialog);
             Messenger.Default.Register<string>(this, "AlertMsg", AlertMsg);
+            Messenger.Default.Register<string>(this, "Cancel", CloseDialog);
             this.Unloaded += (sender, e) => Messenger.Default.Unregister(this);
+        }
+
+        private void CloseDialog(string obj)
+        {
+            Application.Current.Shutdown();
         }
 
         private void OpenDialog(string a)

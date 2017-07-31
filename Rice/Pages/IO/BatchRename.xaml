@@ -30,7 +30,7 @@
                     <TextBox x:Name="txtFrom" Text="{Binding TextFrom}">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="TextChanged">
-                                <cmd:EventToCommand Command="{Binding TextChangedCommand}" />
+                                <cmd:EventToCommand Command="{Binding ChangeFilesCommandFromCommand}" CommandParameter="{Binding ElementName=txtFrom,Path=Text}" />
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </TextBox>
@@ -88,7 +88,7 @@
             </DataGrid>
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="btnRun" Content="开始重命名(R)" Command="{Binding Run}" />
-                <Button x:Name="btnCancle" Content="取消(C)" />
+                <Button x:Name="btnCancle" Command="{Binding CancelCommand}" Content="取消(C)" />
             </StackPanel>
         </Grid>
         <StackPanel Orientation="Vertical" Grid.Column="1">

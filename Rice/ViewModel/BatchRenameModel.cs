@@ -11,6 +11,9 @@ namespace Rice.ViewModel
 {
     public class BatchRenameModel : ViewModelBase
     {
+        private const string tokenAlertMsg = "AlertMsg";
+        private const string tokenOpenDialog = "OpenDialog";
+        private const string tokenCancel = "Cancel";
         private string[] filetypes;
         public BatchRenameModel()
         {
@@ -34,7 +37,8 @@ namespace Rice.ViewModel
 
             TextChangedCommand = new RelayCommand<string>(ChangeFilesCommand);
             Run = new RelayCommand(RunCommand);
-        }
+            ChangeFilesCommandFromCommand = new RelayCommand<string>(ChangeFilesCommandFrom);
+    }
 
         #region 属性
 
@@ -69,7 +73,7 @@ namespace Rice.ViewModel
         }
 
         public ICommand TextChangedCommand { get; private set; }
-
+        public ICommand ChangeFilesCommandFromCommand { get; private set; }
 
         private string _textDir;
         public const string TextDirPropertyName = "TextDir";
@@ -192,7 +196,7 @@ namespace Rice.ViewModel
 
         private void GetDirCommand()
         {
-            MessengerInstance.Send<string>(null, "OpenDialog");
+            MessengerInstance.Send<string>(null, tokenOpenDialog);
             //Messenger.Default.Send<string>(null, "OpenDialog");
         }
 
@@ -220,7 +224,7 @@ namespace Rice.ViewModel
             }
             catch (System.Exception ex)
             {
-                MessengerInstance.Send<string>(ex.ToString(), "AlertMsg");
+                MessengerInstance.Send<string>(ex.ToString(), tokenAlertMsg);
             }
         }
 
@@ -271,6 +275,37 @@ namespace Rice.ViewModel
             DGFiles = DGFiles;
         }
 
+        private void ChangeFilesCommandFrom(string fromText)
+        {
+            TextFrom = fromText ?? string.Empty;
+            if (DGFiles == null || DGFiles.Count == 0)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(fromText))
+            {
+                foreach (FileItem item in DGFiles)
+                {
+                    item.PreviewName = item.FileInfomation.Name;
+                }
+            }
+            else
+            {
+                foreach (FileItem item in DGFiles)
+                {
+                    string _filename = item.FileInfomation.Name.Split('.')[0].Replace(fromText, "");
+                    if (string.IsNullOrEmpty(_filename))
+                    {
+                        Messenger.Default.Send<string>("文件名不能为空。", tokenAlertMsg);
+                        break;
+                    }
+                    item.PreviewName =_filename + item.FileInfomation.Extension;
+                }
+            }
+            DGFiles = DGFiles;
+        }
+
         public ICommand Run { get; private set; }
 
         private void RunCommand()
@@ -294,6 +329,13 @@ namespace Rice.ViewModel
                 f.FileInfomation.MoveTo(f.FileInfomation.FullName.Replace(f.FirstName, f.PreviewName));
                 f.Result = "完成";
             }
+        }
+
+        private ICommand CancelCommand { get; private set; }
+
+        public void Cancel()
+        {
+            Messenger.Default.Send<string>(null,tokenCancel);
         }
         #endregion
     }
