@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System;
 using System.IO;
 using System.ComponentModel;
+using System.Threading;
 
 namespace Rice.ViewModel
 {
@@ -38,6 +39,14 @@ namespace Rice.ViewModel
             TextChangedCommand = new RelayCommand<string>(ChangeFilesCommand);
             Run = new RelayCommand(RunCommand);
             ChangeFilesCommandFromCommand = new RelayCommand<string>(ChangeFilesCommandFrom);
+
+            RunReplace = new RelayCommand(RunReplaceCommand);
+
+            RunReplaceIsEnabled = true;
+            //
+            TextFrom = "AbpCompanyName.AbpProjectName";
+            TextTo = "Lgy.LIS";
+            TextDir = @"C:\Users\Administrator\Documents\gitcode\aspnet-core";
     }
 
         #region 属性
@@ -69,6 +78,21 @@ namespace Rice.ViewModel
             {
                 _textTo = value;
                 RaisePropertyChanged(TextToPropertyName);
+            }
+        }
+
+        private bool _RunReplaceIsEnabled;
+        public const string RunReplaceIsEnabledPropertyName = "RunReplaceIsEnabled";
+        public bool RunReplaceIsEnabled
+        {
+            get
+            {
+                return _RunReplaceIsEnabled;
+            }
+            set
+            {
+                _RunReplaceIsEnabled = value;
+                RaisePropertyChanged(RunReplaceIsEnabledPropertyName);
             }
         }
 
@@ -241,7 +265,7 @@ namespace Rice.ViewModel
                 FileInfo[] files = di.GetFiles(str);
                 foreach (FileInfo f in files)
                 {
-                    _DGFiles.Add(new FileItem() { FileInfomation = f, FirstName = f.Name, PreviewName = f.Name });
+                    _DGFiles.Add(new FileItem() { FileInfomation = f, FirstName = f.Name, PreviewName = f.Name,FullName=f.FullName,Path=f.DirectoryName });
                 }
             }
 
@@ -270,9 +294,8 @@ namespace Rice.ViewModel
 
             foreach (FileItem item in DGFiles)
             {
-                item.PreviewName = item.FileInfomation.Name.Split('.')[0].Replace(TextFrom, targetText) + item.FileInfomation.Extension;
+                item.PreviewName = item.FirstName.Replace(TextFrom, targetText);
             }
-            DGFiles = DGFiles;
         }
 
         private void ChangeFilesCommandFrom(string fromText)
@@ -285,25 +308,25 @@ namespace Rice.ViewModel
 
             if (string.IsNullOrEmpty(fromText))
             {
-                foreach (FileItem item in DGFiles)
-                {
-                    item.PreviewName = item.FileInfomation.Name;
-                }
+                //foreach (FileItem item in DGFiles)
+                //{
+                //    item.PreviewName = item.FileInfomation.Name;
+                //}
+                return;
             }
             else
             {
                 foreach (FileItem item in DGFiles)
                 {
-                    string _filename = item.FileInfomation.Name.Split('.')[0].Replace(fromText, "");
+                    string _filename = item.FirstName.Replace(fromText, TextTo);
                     if (string.IsNullOrEmpty(_filename))
                     {
                         Messenger.Default.Send<string>("文件名不能为空。", tokenAlertMsg);
                         break;
                     }
-                    item.PreviewName =_filename + item.FileInfomation.Extension;
+                    item.PreviewName = _filename;
                 }
             }
-            DGFiles = DGFiles;
         }
 
         public ICommand Run { get; private set; }
@@ -331,7 +354,31 @@ namespace Rice.ViewModel
             }
         }
 
-        private ICommand CancelCommand { get; private set; }
+        public ICommand RunReplace
+        {
+            get; private set;
+        }
+
+        private void RunReplaceCommand()
+        {
+            RunReplaceIsEnabled = false;
+            ThreadPool.QueueUserWorkItem(a=> {
+                foreach (FileItem item in DGFiles)
+                {
+                    string content = File.ReadAllText(item.FileInfomation.FullName);
+                    content = content.Replace(TextFrom, TextTo);
+                    File.WriteAllText(item.FileInfomation.FullName, content);
+                    item.Result = "完成";
+                }
+
+                RunReplaceIsEnabled = true;
+            });
+            
+
+            //DGFiles = DGFiles;
+        }
+
+        public ICommand CancelCommand { get; private set; }
 
         public void Cancel()
         {

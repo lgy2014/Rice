@@ -10,7 +10,7 @@
              d:DesignHeight="300" d:DesignWidth="600">
     <UserControl.Resources>
         <Style TargetType="Button">
-            <Setter Property="Margin" Value="15 2" />
+            <Setter Property="Margin" Value="2 2" />
             <Setter Property="Width" Value="90" />
         </Style>
         <Style TargetType="TextBlock">
@@ -88,6 +88,7 @@
             </DataGrid>
             <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button x:Name="btnRun" Content="开始重命名(R)" Command="{Binding Run}" />
+                <Button x:Name="RunReplace" Content="替换内容" Command="{Binding RunReplace}" IsEnabled="{Binding RunReplaceIsEnabled}" />
                 <Button x:Name="btnCancle" Command="{Binding CancelCommand}" Content="取消(C)" />
             </StackPanel>
         </Grid>

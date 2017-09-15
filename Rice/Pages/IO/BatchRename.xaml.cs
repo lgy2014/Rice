@@ -49,6 +49,11 @@ namespace Rice.Pages.IO
         {
             System.Windows.MessageBox.Show(msg);
         }
+
+        private void DisableBtnReplace()
+        {
+            RunReplace.IsEnabled = false;
+        }
     }
     
 }
