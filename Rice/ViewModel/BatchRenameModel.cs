@@ -7,6 +7,7 @@ using System;
 using System.IO;
 using System.ComponentModel;
 using System.Threading;
+using System.Text;
 
 namespace Rice.ViewModel
 {
@@ -25,7 +26,7 @@ namespace Rice.ViewModel
 
             _FileTypes = new ObservableCollection<ComboxEntry>();
             _FileTypes.Add(new ComboxEntry() { Entry = "*.*" });
-            ComboxEntry ce = new ComboxEntry() { Entry = "*.sln;*.csproj;*.config;*.aspx;*.cs; *.txt;*.cshtml;*.html;*.asax;*.ashx;*.js;*.css;" };
+            ComboxEntry ce = new ComboxEntry() { Entry = "*.sln;*.csproj;*.config;*.aspx;*.cs; *.txt;*.cshtml;*.html;*.asax;*.ashx;*.js;*.css;*.json" };
             _FileTypes.Add(ce);
             _FileTypes.Add(new ComboxEntry() { Entry = "*.ini;*.reg;*.bat;*.cmd;" });
             _FileTypes.Add(new ComboxEntry() { Entry = "*.htm;*.html;*.xml;" });
@@ -365,9 +366,9 @@ namespace Rice.ViewModel
             ThreadPool.QueueUserWorkItem(a=> {
                 foreach (FileItem item in DGFiles)
                 {
-                    string content = File.ReadAllText(item.FileInfomation.FullName);
+                    string content = File.ReadAllText(item.FileInfomation.FullName,Encoding.UTF8);
                     content = content.Replace(TextFrom, TextTo);
-                    File.WriteAllText(item.FileInfomation.FullName, content);
+                    File.WriteAllText(item.FileInfomation.FullName, content,Encoding.UTF8);
                     item.Result = "完成";
                 }
 
