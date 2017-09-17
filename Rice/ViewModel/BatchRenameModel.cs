@@ -26,10 +26,10 @@ namespace Rice.ViewModel
 
             _FileTypes = new ObservableCollection<ComboxEntry>();
             _FileTypes.Add(new ComboxEntry() { Entry = "*.*" });
-            ComboxEntry ce = new ComboxEntry() { Entry = "*.sln;*.csproj;*.config;*.aspx;*.cs; *.txt;*.cshtml;*.html;*.asax;*.ashx;*.js;*.css;*.json" };
+            ComboxEntry ce = new ComboxEntry() { Entry = "*.sln;*.csproj;*.config;*.aspx;*.cs; *.txt;*.cshtml;*.html;*.htm;*.asax;*.ashx;*.js;*.css;*.json;*.xml" };
             _FileTypes.Add(ce);
             _FileTypes.Add(new ComboxEntry() { Entry = "*.ini;*.reg;*.bat;*.cmd;" });
-            _FileTypes.Add(new ComboxEntry() { Entry = "*.htm;*.html;*.xml;" });
+            _FileTypes.Add(new ComboxEntry() { Entry = "*.xml;" });
             FileTypesEntry = ce;
 
             _ExcludeSubDirs = new ObservableCollection<ComboxEntry>();
@@ -47,7 +47,7 @@ namespace Rice.ViewModel
             //
             TextFrom = "AbpCompanyName.AbpProjectName";
             TextTo = "Lgy.LIS";
-            TextDir = @"C:\Users\Administrator\Documents\gitcode\aspnet-core";
+            TextDir = string.Empty;
     }
 
         #region 属性
